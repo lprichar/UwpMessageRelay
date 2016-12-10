@@ -41,11 +41,10 @@
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
       </uap:VisualElements>
       <Extensions>
-        <Extension Category="windows.backgroundTasks" EntryPoint="UwpMessageRelay.MessageRelay.StartupTask">
-          <BackgroundTasks>
-            <iot:Task Type="startup" />
-          </BackgroundTasks>
-        </Extension>
+        <uap:Extension Category="windows.appService"
+          EntryPoint="UwpMessageRelay.MessageRelay.StartupTask">
+          <uap:AppService Name="UwpMessageRelayService" />
+        </uap:Extension>
       </Extensions>
     </Application>
   </Applications>

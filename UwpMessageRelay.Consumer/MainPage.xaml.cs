@@ -1,17 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
+using UwpMessageRelay.Consumer.Services;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -20,16 +11,37 @@ namespace UwpMessageRelay.Consumer
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class MainPage : Page
+    public sealed partial class MainPage
     {
+        private readonly MessageRelayService _connection = MessageRelayService.Instance;
+
         public MainPage()
         {
-            this.InitializeComponent();
+            InitializeComponent();
+            _connection.OnMessageReceived += ConnectionOnMessageReceived;
         }
 
-        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+        private async void ConnectionOnMessageReceived(ValueSet valueSet)
         {
-            
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            {
+                var message = valueSet.First();
+                MessageResults.Text = $"{message.Value}";
+            });
+        }
+
+        private async void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+        {
+            MessageResults.Text = "Sending Message";
+            try
+            {
+                await _connection.SendMessageAsync("Echo", Message.Text);
+                MessageResults.Text = "Message Sent Successfully";
+            }
+            catch (Exception ex)
+            {
+                MessageResults.Text = "Send error: " + ex.Message;
+            }
         }
     }
 }

@@ -11,7 +11,7 @@
         <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
             <TextBlock Text="Consumer" FontSize="32" HorizontalAlignment="Center"></TextBlock>
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10">
-                <TextBox Width="300"></TextBox>
+                <TextBox Width="300" x:Name="Message"></TextBox>
                 <Button Click="ButtonBase_OnClick">Send</Button>
             </StackPanel>
             <TextBlock x:Name="MessageResults">Message results</TextBlock>
