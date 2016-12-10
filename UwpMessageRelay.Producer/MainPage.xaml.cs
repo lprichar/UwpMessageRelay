@@ -26,5 +26,10 @@ namespace UwpMessageRelay.Producer
         {
             this.InitializeComponent();
         }
+
+        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+        {
+            
+        }
     }
 }

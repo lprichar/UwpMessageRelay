@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UwpMessageRelay.MessageRela
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UwpMessageRelay.Producer", "UwpMessageRelay.Producer\UwpMessageRelay.Producer.csproj", "{7604B769-C16A-470F-8239-BD83149E972A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UwpMessageRelay.Consumer", "UwpMessageRelay.Consumer\UwpMessageRelay.Consumer.csproj", "{6563F4FE-24A3-43EF-AE3F-D53F17929DAF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM = Debug|ARM
@@ -53,6 +55,24 @@ Global
 		{7604B769-C16A-470F-8239-BD83149E972A}.Release|x86.ActiveCfg = Release|x86
 		{7604B769-C16A-470F-8239-BD83149E972A}.Release|x86.Build.0 = Release|x86
 		{7604B769-C16A-470F-8239-BD83149E972A}.Release|x86.Deploy.0 = Release|x86
+		{6563F4FE-24A3-43EF-AE3F-D53F17929DAF}.Debug|ARM.ActiveCfg = Debug|ARM
+		{6563F4FE-24A3-43EF-AE3F-D53F17929DAF}.Debug|ARM.Build.0 = Debug|ARM
+		{6563F4FE-24A3-43EF-AE3F-D53F17929DAF}.Debug|ARM.Deploy.0 = Debug|ARM
+		{6563F4FE-24A3-43EF-AE3F-D53F17929DAF}.Debug|x64.ActiveCfg = Debug|x64
+		{6563F4FE-24A3-43EF-AE3F-D53F17929DAF}.Debug|x64.Build.0 = Debug|x64
+		{6563F4FE-24A3-43EF-AE3F-D53F17929DAF}.Debug|x64.Deploy.0 = Debug|x64
+		{6563F4FE-24A3-43EF-AE3F-D53F17929DAF}.Debug|x86.ActiveCfg = Debug|x86
+		{6563F4FE-24A3-43EF-AE3F-D53F17929DAF}.Debug|x86.Build.0 = Debug|x86
+		{6563F4FE-24A3-43EF-AE3F-D53F17929DAF}.Debug|x86.Deploy.0 = Debug|x86
+		{6563F4FE-24A3-43EF-AE3F-D53F17929DAF}.Release|ARM.ActiveCfg = Release|ARM
+		{6563F4FE-24A3-43EF-AE3F-D53F17929DAF}.Release|ARM.Build.0 = Release|ARM
+		{6563F4FE-24A3-43EF-AE3F-D53F17929DAF}.Release|ARM.Deploy.0 = Release|ARM
+		{6563F4FE-24A3-43EF-AE3F-D53F17929DAF}.Release|x64.ActiveCfg = Release|x64
+		{6563F4FE-24A3-43EF-AE3F-D53F17929DAF}.Release|x64.Build.0 = Release|x64
+		{6563F4FE-24A3-43EF-AE3F-D53F17929DAF}.Release|x64.Deploy.0 = Release|x64
+		{6563F4FE-24A3-43EF-AE3F-D53F17929DAF}.Release|x86.ActiveCfg = Release|x86
+		{6563F4FE-24A3-43EF-AE3F-D53F17929DAF}.Release|x86.Build.0 = Release|x86
+		{6563F4FE-24A3-43EF-AE3F-D53F17929DAF}.Release|x86.Deploy.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
