@@ -1,35 +1,45 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
+using System.Diagnostics;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using UwpMessageRelay.Producer.Services;
 
 namespace UwpMessageRelay.Producer
 {
     /// <summary>
     /// Provides application-specific behavior to supplement the default Application class.
     /// </summary>
-    sealed partial class App : Application
+    sealed partial class App
     {
+        private readonly MessageRelayService _connection = MessageRelayService.Instance;
+
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
         /// </summary>
         public App()
         {
-            this.InitializeComponent();
-            this.Suspending += OnSuspending;
+            InitializeComponent();
+            Suspending += OnSuspending;
+            LeavingBackground += OnLeavingBackground;
+        }
+
+        private async void OnLeavingBackground(object sender, LeavingBackgroundEventArgs leavingBackgroundEventArgs)
+        {
+            try
+            {
+                await _connection.Open();
+            }
+            catch (Exception ex)
+            {
+                // failing quietly is probably ok for now since the connection will
+                //  attempt to re-open itself again on next send.  It just means
+                //  we won't be able to receive messages
+                Debug.WriteLine("Error opening connection on startup" + ex);
+            }
         }
 
         /// <summary>
@@ -42,7 +52,7 @@ namespace UwpMessageRelay.Producer
 #if DEBUG
             if (System.Diagnostics.Debugger.IsAttached)
             {
-                this.DebugSettings.EnableFrameRateCounter = true;
+                DebugSettings.EnableFrameRateCounter = true;
             }
 #endif
             Frame rootFrame = Window.Current.Content as Frame;
@@ -99,7 +109,9 @@ namespace UwpMessageRelay.Producer
         private void OnSuspending(object sender, SuspendingEventArgs e)
         {
             var deferral = e.SuspendingOperation.GetDeferral();
-            //TODO: Save application state and stop any background activity
+
+            _connection.CloseConnection();
+
             deferral.Complete();
         }
     }

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
 using UwpMessageRelay.Producer.Services;
 
@@ -11,6 +13,16 @@ namespace UwpMessageRelay.Producer
         public MainPage()
         {
             InitializeComponent();
+            _connection.OnMessageReceived += ConnectionOnMessageReceived;
+        }
+
+        private async void ConnectionOnMessageReceived(ValueSet valueSet)
+        {
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            {
+                var message = valueSet.First();
+                MessageResults.Text = $"{message.Value}";
+            });
         }
 
         private async void ButtonBase_OnClick(object sender, RoutedEventArgs e)
