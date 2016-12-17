@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
 using UwpMessageRelay.Producer.Services;
@@ -13,7 +14,32 @@ namespace UwpMessageRelay.Producer
         public MainPage()
         {
             InitializeComponent();
+            Loaded += OnLoaded;
             _connection.OnMessageReceived += ConnectionOnMessageReceived;
+        }
+
+        private async void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
+        {
+            await EnsureConnected();
+        }
+
+        private async Task EnsureConnected()
+        {
+            var retryDelay = 10000;
+            await Task.Delay(retryDelay);
+            while (!_connection.IsConnected)
+            {
+                try
+                {
+                    await _connection.Open();
+                }
+                catch (Exception)
+                {
+                    // note ensure MessageRelay is deployed by right clicking on UwpMessageRelay.MessageRelay and selecting "Deploy"
+                    MessageResults.Text = $"Unable to connect to siren of shame engine. Retrying in {(retryDelay / 1000)} seconds...";
+                    await Task.Delay(retryDelay);
+                }
+            }
         }
 
         private async void ConnectionOnMessageReceived(ValueSet valueSet)

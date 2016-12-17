@@ -14,6 +14,7 @@ namespace UwpMessageRelay.Consumer.Services
 
         // Todo: convert to dependency injection
         public static MessageRelayService Instance { get; } = new MessageRelayService();
+        public bool IsConnected => _connection != null;
 
         private async Task<AppServiceConnection> CachedConnection()
         {
