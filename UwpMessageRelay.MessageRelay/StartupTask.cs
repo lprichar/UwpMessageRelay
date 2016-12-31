@@ -46,9 +46,13 @@ namespace UwpMessageRelay.MessageRelay
             }
         }
 
+        /// <summary>
+        /// This happens when an app closes its connection normally.
+        /// </summary>
         private async void OnTaskCancelled(IBackgroundTaskInstance sender, BackgroundTaskCancellationReason reason)
         {
-            await Debug("MessageRelay was cancelled");
+            await Info("MessageRelay was cancelled, removing " + _thisConnectionGuid + " from the list of active connections.");
+            RemoveConnection(_thisConnectionGuid);
             if (_backgroundTaskDeferral != null)
             {
                 _backgroundTaskDeferral.Complete();
@@ -62,11 +66,16 @@ namespace UwpMessageRelay.MessageRelay
             RemoveConnection(_thisConnectionGuid);
         }
 
+        /// <summary>
+        /// Writes logs to the LocalFolder.  On Windows IoT on a Pi this would be like:
+        /// '\User Folders\LocalAppData\UwpMessageRelay.MessageRelay-uwp_1.0.0.0_arm__n7wdzm614gaee\LocalState\MessageRelayLogs'
+        /// On an x86 Windows machine it would be something like:
+        /// C:\Users\[user]\AppData\Local\Packages\UwpMessageRelay.MessageRelay-uwp_n7wdzm614gaee\LocalState\MessageRelayLogs
+        /// </summary>
         private async Task Debug(string message)
         {
             await Task.Yield();
 
-            //// e.g. '\User Folders\LocalAppData\UwpMessageRelay.MessageRelay-uwp_1.0.0.0_arm__n7wdzm614gaee\LocalState\MessageRelayLogs'
             //var logFolder = await ApplicationData.Current.LocalFolder.CreateFolderAsync("MessageRelayLogs", CreationCollisionOption.OpenIfExists);
             //var messageRelayLogsPath = Path.Combine(logFolder.Path, "MessageRelayLogs.txt");
             //var contents = $"{DateTime.Now} - {message}{Environment.NewLine}";
