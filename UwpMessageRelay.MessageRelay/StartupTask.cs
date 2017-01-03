@@ -32,8 +32,14 @@ namespace UwpMessageRelay.MessageRelay
                 _backgroundTaskDeferral = taskInstance.GetDeferral();
                 // save a unique identifier for each connection
                 _thisConnectionGuid = Guid.NewGuid();
-                var triggerDetails = (AppServiceTriggerDetails)taskInstance.TriggerDetails;
-                var connection = triggerDetails.AppServiceConnection;
+                var triggerDetails = taskInstance.TriggerDetails as AppServiceTriggerDetails;
+                var connection = triggerDetails?.AppServiceConnection;
+                if (connection == null)
+                {
+                    await Error("AppServiceConnection was null, ignorning this request");
+                    _backgroundTaskDeferral.Complete();
+                    return;
+                }
                 // save the guid and connection in a *static* list of all connections
                 Connections.Add(_thisConnectionGuid, connection);
                 await Debug("Connection opened: " + _thisConnectionGuid);
