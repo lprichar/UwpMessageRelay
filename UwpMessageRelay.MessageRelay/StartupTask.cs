@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.AppService;
 using Windows.ApplicationModel.Background;
@@ -15,6 +16,7 @@ namespace UwpMessageRelay.MessageRelay
         private BackgroundTaskDeferral _backgroundTaskDeferral;
         private Guid _thisConnectionGuid;
         private static readonly Dictionary<Guid, AppServiceConnection> Connections = new Dictionary<Guid, AppServiceConnection>();
+        private static readonly SemaphoreSlim Semaphore = new SemaphoreSlim(1);
 
         /// <summary>
         /// When an AppServiceConnection of type 'UwpMessageRelayService' (as
@@ -42,7 +44,7 @@ namespace UwpMessageRelay.MessageRelay
             }
             catch (Exception ex)
             {
-                await Debug("Error in startup " + ex);
+                await Error("Error in startup " + ex);
             }
         }
 
@@ -66,20 +68,42 @@ namespace UwpMessageRelay.MessageRelay
             RemoveConnection(_thisConnectionGuid);
         }
 
+        private async Task Error(string message, Exception ex = null)
+        {
+            await Write("ERROR", message + " - " + ex);
+        }
+
+        private async Task Info(string message)
+        {
+            await Write("INFO", message);
+        }
+
+        private async Task Debug(string message)
+        {
+            //await Write("DEBUG", message);
+        }
+
         /// <summary>
         /// Writes logs to the LocalFolder.  On Windows IoT on a Pi this would be like:
         /// '\User Folders\LocalAppData\UwpMessageRelay.MessageRelay-uwp_1.0.0.0_arm__n7wdzm614gaee\LocalState\MessageRelayLogs'
         /// On an x86 Windows machine it would be something like:
         /// C:\Users\[user]\AppData\Local\Packages\UwpMessageRelay.MessageRelay-uwp_n7wdzm614gaee\LocalState\MessageRelayLogs
         /// </summary>
-        private async Task Debug(string message)
+        private async Task Write(string level, string message)
         {
-            await Task.Yield();
-
-            //var logFolder = await ApplicationData.Current.LocalFolder.CreateFolderAsync("MessageRelayLogs", CreationCollisionOption.OpenIfExists);
-            //var messageRelayLogsPath = Path.Combine(logFolder.Path, "MessageRelayLogs.txt");
-            //var contents = $"{DateTime.Now} - {message}{Environment.NewLine}";
-            //File.AppendAllText(messageRelayLogsPath, contents);
+            var logFolder = await ApplicationData.Current.LocalFolder.CreateFolderAsync("MessageRelayLogs",
+                CreationCollisionOption.OpenIfExists);
+            var messageRelayLogsPath = Path.Combine(logFolder.Path, "MessageRelayLogs.txt");
+            var contents = $"{DateTime.Now} - {level} - {message}{Environment.NewLine}";
+            await Semaphore.WaitAsync();
+            try
+            {
+                File.AppendAllText(messageRelayLogsPath, contents);
+            }
+            finally
+            {
+                Semaphore.Release(1);
+            }
         }
 
         private async void ConnectionRequestReceived(AppServiceConnection sender, AppServiceRequestReceivedEventArgs args)
@@ -121,15 +145,15 @@ namespace UwpMessageRelay.MessageRelay
                     //      to dispose of its connection, the connection object remains
                     //      in Connections.  When someone tries to send to it, it gets
                     //      an AppServiceResponseStatus.Failure response
-                    await Debug("Error sending to " + connection.Key + ".  Removing it from the list of active connections.");
+                    await Info("Error sending to " + connection.Key + ".  Removing it from the list of active connections.");
                     RemoveConnection(connection.Key);
                     return;
                 }
-                await Debug("Error sending to " + connection.Key + " - " + result.Status);
+                await Error("Error sending to " + connection.Key + " - " + result.Status);
             }
             catch (Exception ex)
             {
-                await Debug("Error SendMessage to " + connection.Key + " " + ex);
+                await Error("Error SendMessage to " + connection.Key + " " + ex);
             }
         }
 
